@@ -1,13 +1,15 @@
 ﻿using Application.Commands;
 using Application.Common.Models;
 using Domain.Models;
+using FluentAssertions;
 using Moq;
+using NUnit.Framework;
 
 namespace ApplicationTest.Commands;
 
 public class CreateItemTest
 {
-    [Fact]
+    [Test]
     public async Task CreateItemHandler_Should_Create_Item_Successfully()
     {
         // Arrange
@@ -28,13 +30,14 @@ public class CreateItemTest
 
         // Assert
         mockRepository.Verify(repo => repo.CreateItem(It.IsAny<BaseItem>(), It.IsAny<CancellationToken>()), Times.Once);
-        Assert.NotNull(result);
-        Assert.Equal(item.Name, result.Name);
-        Assert.Equal(item.Data, result.Data);
-        Assert.Equal(item.Id, result.Id);
+        result.Should().NotBeNull();
+        result.Name.Should().Be(item.Name);
+        string? description = result.Data?.description;
+        description.Should().NotBeEmpty().And.BeEquivalentTo(item.Data?.description);
+        result.Id.Should().Be(item.Id);
     }
 
-    [Fact]
+    [Test]
     public async Task CreateItemHandler_Should_Fail_When_Request_Fail()
     {
         // Arrange
@@ -43,13 +46,16 @@ public class CreateItemTest
             .Setup(itemRepository => itemRepository.CreateItem(It.IsAny<BaseItem>(), It.IsAny<CancellationToken>()))
             .Throws<HttpRequestException>();
         var handler = new CreateItemHandler(mockRepository.Object);
-        var command = new CreateItem(new ()
+        var command = new CreateItem(new()
         {
             Name = String.Empty,
             Data = new { description = "Test Description" }
         });
 
-        // Act & Assert
-        await Assert.ThrowsAsync<HttpRequestException>(() => handler.Handle(command, default));
+        // Act
+        Func<Task> act = async () => await handler.Handle(command, default);
+
+        // Assert
+        await act.Should().ThrowAsync<HttpRequestException>();
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Application.Commands;
 using Application.Common.Models;
 using Domain.Models;
+using FluentAssertions;
 using Moq;
+using NUnit.Framework;
 
 namespace ApplicationTest.Commands;
 
@@ -16,26 +18,26 @@ public class UpdateItemTest
         _handler = new UpdateItemHandler(_itemRepositoryMock.Object);
     }
 
-    [Fact]
+    [Test, Order(0)]
     public async Task Handle_ShouldUpdateItem_WhenItemExists()
     {
         // Arrange
         var itemId = Guid.NewGuid();
 
         var existingItem = new Item { Id = itemId.ToString(), Name = "Old Item" };
-        var updateItemCommand = new UpdateItem(existingItem) ;
+        var updateItemCommand = new UpdateItem(existingItem);
 
-        _itemRepositoryMock.Setup(repo => repo.UpdateItem(It.IsAny<Item>(),It.IsAny<CancellationToken>())).ReturnsAsync(existingItem);
+        _itemRepositoryMock.Setup(repo => repo.UpdateItem(It.IsAny<Item>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingItem);
 
         // Act
         var stillExistingItem = await _handler.Handle(updateItemCommand, CancellationToken.None);
 
         // Assert
         _itemRepositoryMock.Verify(repo => repo.UpdateItem(It.IsAny<Item>(), It.IsAny<CancellationToken>()), Times.Once);
-        Assert.Equal(existingItem, stillExistingItem);
+        stillExistingItem.Should().BeEquivalentTo(existingItem);
     }
 
-    [Fact]
+    [Test, Order(1)]
     public async Task Handle_ShouldThrowException_WhenExceptionHappend()
     {
         // Arrange
@@ -47,6 +49,7 @@ public class UpdateItemTest
         _itemRepositoryMock.Setup(repo => repo.UpdateItem(It.IsAny<Item>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(updateItemCommand, CancellationToken.None));
+        await _handler.Invoking(h => h.Handle(updateItemCommand, CancellationToken.None))
+                      .Should().ThrowAsync<InvalidOperationException>();
     }
 }

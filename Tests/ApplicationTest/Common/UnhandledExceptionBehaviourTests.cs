@@ -1,7 +1,9 @@
 ﻿using Application.Common.Behaviours;
+using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NUnit.Framework;
 
 namespace ApplicationTest.Common;
 
@@ -18,7 +20,7 @@ public class UnhandledExceptionBehaviourTests
         _behaviour = new UnhandledExceptionBehaviour<object, object>(_logger.Object);
     }
 
-    [Fact]
+    [Test]
     public async Task Handle_ShouldLogError_WhenExceptionIsThrown()
     {
         // Arrange
@@ -26,22 +28,21 @@ public class UnhandledExceptionBehaviourTests
         var exception = new Exception("Test exception");
         _next.Setup(n => n()).ThrowsAsync(exception);
 
-        // Act
-        var result = await Assert.ThrowsAsync<Exception>(() => _behaviour.Handle(request, _next.Object, new CancellationToken()));
+        // Act & Assert
+        var result = await _behaviour.Invoking(b => b.Handle(request, _next.Object, new CancellationToken()))
+                                     .Should().ThrowAsync<Exception>();
 
-        // Assert
-        Assert.Equal(exception, result);
         _logger.Verify(
             x => x.Log(
                 LogLevel.Error,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Unhandled Exception")),
                 exception,
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
             Times.Once);
     }
 
-    [Fact]
+    [Test]
     public async Task Handle_ShouldCallNextDelegate_WhenNoExceptionIsThrown()
     {
         // Arrange
@@ -52,7 +53,7 @@ public class UnhandledExceptionBehaviourTests
         var result = await _behaviour.Handle(request, _next.Object, new CancellationToken());
 
         // Assert
-        Assert.NotNull(result);
+        result.Should().NotBeNull();
         _next.Verify(n => n(), Times.Once);
     }
 }

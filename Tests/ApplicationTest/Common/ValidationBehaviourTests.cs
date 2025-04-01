@@ -1,8 +1,10 @@
 ﻿using Application.Common.Behaviours;
+using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 using Moq;
+using NUnit.Framework;
 
 namespace ApplicationTest.Common
 {
@@ -18,7 +20,7 @@ namespace ApplicationTest.Common
             _validationBehaviour = new ValidationBehaviour<SampleRequest, SampleResponse>(validators);
         }
 
-        [Fact]
+        [Test,Order(0)]
         public async Task Handle_ShouldCallValidateAsync()
         {
             // Arrange
@@ -32,7 +34,7 @@ namespace ApplicationTest.Common
             _validatorMock.Verify(v => v.ValidateAsync(It.IsAny<ValidationContext<SampleRequest>>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Fact]
+        [Test]
         public async Task Handle_ShouldThrowValidationException_WhenValidationFails()
         {
             // Arrange
@@ -42,11 +44,14 @@ namespace ApplicationTest.Common
             _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<ValidationContext<SampleRequest>>(), It.IsAny<CancellationToken>()))
                           .ReturnsAsync(new ValidationResult(failures));
 
-            // Act & Assert
-            await Assert.ThrowsAsync<ValidationException>(() => _validationBehaviour.Handle(request, next.Object, CancellationToken.None));
+            // Act
+            Func<Task> act = async () => await _validationBehaviour.Handle(request, next.Object, CancellationToken.None);
+
+            // Assert
+            await act.Should().ThrowAsync<ValidationException>();
         }
 
-        [Fact]
+        [Test]
         public async Task Handle_ShouldCallNext_WhenValidationSucceeds()
         {
             // Arrange

@@ -2,7 +2,9 @@
 using Application.Common.Models;
 using Application.Queries;
 using Domain.Models;
+using FluentAssertions;
 using Moq;
+using NUnit.Framework;
 
 namespace ApplicationTest.Queries;
 
@@ -17,11 +19,10 @@ public class GetItemsWithPaginationTest
         _handler = new GetItemsWithPaginationHandler(_itemRepositoryMock.Object);
     }
 
-    [Theory]
-    [InlineData(0, 10, SortOrder.Ascending,2)]
-    [InlineData(1, 10, SortOrder.Ascending, 0)]
-    [InlineData(0, 1, SortOrder.Ascending, 1)]
-    public async Task Handle_ShouldReturnPaginatedItems(int pageNumber,int pageSize, SortOrder order,int countExpected)
+    [TestCase(0, 10, SortOrder.Ascending, 2)]
+    [TestCase(1, 10, SortOrder.Ascending, 0)]
+    [TestCase(0, 1, SortOrder.Ascending, 1)]
+    public async Task Handle_ShouldReturnPaginatedItems(int pageNumber, int pageSize, SortOrder order, int countExpected)
     {
         // Arrange
         var items = new List<Item>
@@ -29,17 +30,17 @@ public class GetItemsWithPaginationTest
                 new () { Id = "1", Name = "Item1" },
                 new () { Id = "2", Name = "Item2" }
             };
-        _itemRepositoryMock.Setup(repo => repo.GetItems( It.IsAny<CancellationToken>()))
+        _itemRepositoryMock.Setup(repo => repo.GetItems(It.IsAny<CancellationToken>()))
             .ReturnsAsync(items);
 
-        var query = new GetItemsWithPagination{PageNumber = pageNumber, PageSize = pageSize, SortOrder = order };
+        var query = new GetItemsWithPagination { PageNumber = pageNumber, PageSize = pageSize, SortOrder = order };
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        Assert.NotNull(result);
+        result.Should().NotBeNull();
         var enumerable = result.ToList();
-        Assert.Equal(countExpected, enumerable.Count);
+        enumerable.Count.Should().Be(countExpected);
     }
 }

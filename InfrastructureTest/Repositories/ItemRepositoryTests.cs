@@ -1,8 +1,10 @@
 ﻿using System.Net;
 using Domain.Models;
+using FluentAssertions;
 using Infrastructure.Repositories;
 using Moq;
 using Moq.Protected;
+using NUnit.Framework;
 
 namespace InfrastructureTest.Repositories;
 
@@ -10,24 +12,24 @@ public class ItemRepositoryTests
 {
     private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
     private readonly ItemRepository _itemRepository;
-    
+
     public ItemRepositoryTests()
     {
         var factoryMock = new Mock<IHttpClientFactory>();
         _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
         factoryMock.Setup(x => x.CreateClient(It.IsAny<String>()))
-            .Returns(new HttpClient(_mockHttpMessageHandler.Object){BaseAddress = new Uri("https://localhost:5000")});
+            .Returns(new HttpClient(_mockHttpMessageHandler.Object) { BaseAddress = new Uri("https://localhost:5000") });
         _itemRepository = new ItemRepository(factoryMock.Object);
     }
 
     private void MockResponse(HttpResponseMessage message)
     {
         //HttpRequestMessage request, CancellationToken cancellationToken
-        _mockHttpMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync",ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+        _mockHttpMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(message);
     }
 
-    [Fact]
+    [Test]
     public async Task GetAllItems_ShouldReturnAllItems()
     {
         // Arrange
@@ -38,19 +40,18 @@ public class ItemRepositoryTests
         };
         this.MockResponse(httpResponseMessage);
 
-         // Act
-         var result = await _itemRepository.GetItems(new CancellationToken());
+        // Act
+        var result = await _itemRepository.GetItems(new CancellationToken());
 
         // Assert
-        Assert.NotNull(result);
-
+        result.Should().NotBeNull();
         var enumerable = result.ToList();
-        Assert.Equal(2, enumerable.Count);
-        Assert.Equal("Item1", enumerable[0].Name);
-        Assert.Equal("Item2", enumerable[1].Name);
+        enumerable.Should().HaveCount(2);
+        enumerable[0].Name.Should().Be("Item1");
+        enumerable[1].Name.Should().Be("Item2");
     }
 
-    [Fact]
+    [Test]
     public async Task GetItemById_ShouldReturnCorrectItem()
     {
         // Arrange
@@ -65,11 +66,11 @@ public class ItemRepositoryTests
         var result = await _itemRepository.GetItem("1", new CancellationToken());
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal("Item1", result.Name);
+        result.Should().NotBeNull();
+        result.Name.Should().Be("Item1");
     }
 
-    [Fact]
+    [Test]
     public async Task AddItem_ShouldAddItem()
     {
         // Arrange
@@ -84,10 +85,10 @@ public class ItemRepositoryTests
         var result = await _itemRepository.CreateItem(item, new CancellationToken());
 
         // Assert
-        Assert.NotNull(result);
+        result.Should().NotBeNull();
     }
 
-    [Fact]
+    [Test, Order(0)]
     public async Task DeleteItem_ShouldDeleteItem()
     {
         // Arrange
