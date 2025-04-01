@@ -1,6 +1,3 @@
 ﻿namespace Application.Exceptions;
 
-public class ItemNotFound : Exception
-{
-    
-}
+public class ItemNotFound : Exception;

@@ -1,5 +1,4 @@
 ﻿using Application.Common.Models;
-using Application.Common.Validators;
 using Domain.Models;
 using FluentValidation;
 using MediatR;
@@ -13,7 +12,7 @@ public sealed class UpdateItem(string id, PartialItem item) : IRequest<Item>
 }
 
 // ReSharper disable once UnusedMember.Global - Used in Api/Controller/ItemController.cs by mediator.Send
-public sealed class UpdateItemHandler(ItemRepository itemRepository)
+public sealed class UpdateItemHandler(IItemRepository itemRepository)
     : IRequestHandler<UpdateItem, Item>
 {
     public async Task<Item> Handle(UpdateItem request, CancellationToken cancellationToken)

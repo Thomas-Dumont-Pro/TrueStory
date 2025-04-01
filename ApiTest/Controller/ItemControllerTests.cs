@@ -1,10 +1,7 @@
 ﻿using System.Net;
 using System.Text;
-using Api;
 using Domain.Models;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -60,7 +57,7 @@ public class ItemControllerTests
 
         var responseContent = await result.Content.ReadAsStringAsync();
         var createdItem = JsonConvert.DeserializeObject<Item>(responseContent);
-        ItemId = createdItem.Id;
+        ItemId = createdItem!.Id;
         createdItem.Should().BeOfType<Item>();
         createdItem.Name.Should().Be("NewItem");
     }

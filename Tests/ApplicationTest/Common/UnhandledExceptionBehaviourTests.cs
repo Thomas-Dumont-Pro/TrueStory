@@ -29,14 +29,14 @@ public class UnhandledExceptionBehaviourTests
         _next.Setup(n => n()).ThrowsAsync(exception);
 
         // Act & Assert
-        var result = await _behaviour.Invoking(b => b.Handle(request, _next.Object, new CancellationToken()))
+        await _behaviour.Invoking(b => b.Handle(request, _next.Object, new CancellationToken()))
                                      .Should().ThrowAsync<Exception>();
 
         _logger.Verify(
             x => x.Log(
                 LogLevel.Error,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Unhandled Exception")),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Unhandled Exception")),
                 exception,
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
             Times.Once);

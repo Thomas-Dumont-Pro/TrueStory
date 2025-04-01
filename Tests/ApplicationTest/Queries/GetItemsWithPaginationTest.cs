@@ -10,12 +10,12 @@ namespace ApplicationTest.Queries;
 
 public class GetItemsWithPaginationTest
 {
-    private readonly Mock<ItemRepository> _itemRepositoryMock;
+    private readonly Mock<IItemRepository> _itemRepositoryMock;
     private readonly GetItemsWithPaginationHandler _handler;
 
     public GetItemsWithPaginationTest()
     {
-        _itemRepositoryMock = new Mock<ItemRepository>();
+        _itemRepositoryMock = new Mock<IItemRepository>();
         _handler = new GetItemsWithPaginationHandler(_itemRepositoryMock.Object);
     }
 
@@ -39,8 +39,9 @@ public class GetItemsWithPaginationTest
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        var enumerable = result.ToList();
+        var enumerable1 = result.ToList();
+        enumerable1.Should().NotBeNull();
+        var enumerable = enumerable1.ToList();
         enumerable.Count.Should().Be(countExpected);
     }
 }

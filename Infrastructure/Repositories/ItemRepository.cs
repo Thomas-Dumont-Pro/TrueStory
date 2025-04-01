@@ -2,12 +2,10 @@
 using System.Net.Http.Json;
 using Application.Exceptions;
 using Domain.Models;
-using Infrastructure.Exceptions;
-using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories;
 
-public class ItemRepository(IHttpClientFactory httpClient) : Application.Common.Models.ItemRepository
+public class ItemRepository(IHttpClientFactory httpClient) : Application.Common.Models.IItemRepository
 {
     private readonly HttpClient _httpClient = httpClient.CreateClient("MockApi");
 
@@ -16,7 +14,7 @@ public class ItemRepository(IHttpClientFactory httpClient) : Application.Common.
         var response = await _httpClient.GetAsync("objects", cancellationToken);
 
         response.EnsureSuccessStatusCode();
-        var data = await response.Content.ReadFromJsonAsync<IEnumerable<Item>>(cancellationToken) ?? new List<Item>();
+        var data = await response.Content.ReadFromJsonAsync<IEnumerable<Item>>(cancellationToken) ?? [];
         return data;
     }
 

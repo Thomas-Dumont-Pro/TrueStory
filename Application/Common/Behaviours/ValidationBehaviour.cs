@@ -16,11 +16,11 @@ public sealed class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValida
                     v.ValidateAsync(request, cancellationToken)));
 
             var failures = validationResults
-                .Where(r => r.Errors.Any())
+                .Where(r => r.Errors.Count>0)
                 .SelectMany(r => r.Errors)
                 .ToList();
 
-            if (failures.Any())
+            if (failures.Count>0)
             {
                 var errorMessage = string.Join("; ", failures.Select(f => f.ErrorMessage));
                 throw new ValidationException(errorMessage);

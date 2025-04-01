@@ -1,5 +1,4 @@
 ﻿using Application.Common.Models;
-using Domain.Models;
 using FluentValidation;
 using MediatR;
 
@@ -11,7 +10,7 @@ public sealed class DeleteItem(string id) : IRequest
 }
 
 // ReSharper disable once UnusedMember.Global - Used in Api/Controller/ItemController.cs by mediator.Send
-public sealed class DeleteItemHandler(ItemRepository itemRepository)
+public sealed class DeleteItemHandler(IItemRepository itemRepository)
     : IRequestHandler<DeleteItem>
 {
     public async Task Handle(DeleteItem request, CancellationToken cancellationToken)

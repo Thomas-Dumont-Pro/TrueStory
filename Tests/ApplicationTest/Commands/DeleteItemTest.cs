@@ -1,6 +1,5 @@
 ﻿using Application.Commands;
 using Application.Common.Models;
-using Domain.Models;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -9,12 +8,12 @@ namespace ApplicationTest.Commands;
 
 public class DeleteItemTest
 {
-    private readonly Mock<ItemRepository> _repositoryMock;
+    private readonly Mock<IItemRepository> _repositoryMock;
     private readonly DeleteItemHandler _handler;
 
     public DeleteItemTest()
     {
-        _repositoryMock = new Mock<ItemRepository>();
+        _repositoryMock = new Mock<IItemRepository>();
         _handler = new DeleteItemHandler(_repositoryMock.Object);
     }
 

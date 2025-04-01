@@ -19,7 +19,7 @@ public class CreateItemTest
             Name = "Test Item",
             Data = new { description = "Test Description" }
         };
-        var mockRepository = new Mock<ItemRepository>();
+        var mockRepository = new Mock<IItemRepository>();
         mockRepository.Setup(repo => repo.CreateItem(It.IsAny<BaseItem>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(item);
         var handler = new CreateItemHandler(mockRepository.Object);
@@ -41,7 +41,7 @@ public class CreateItemTest
     public async Task CreateItemHandler_Should_Fail_When_Request_Fail()
     {
         // Arrange
-        var mockRepository = new Mock<ItemRepository>();
+        var mockRepository = new Mock<IItemRepository>();
         mockRepository
             .Setup(itemRepository => itemRepository.CreateItem(It.IsAny<BaseItem>(), It.IsAny<CancellationToken>()))
             .Throws<HttpRequestException>();

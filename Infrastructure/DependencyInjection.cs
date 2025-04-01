@@ -13,7 +13,7 @@ public static class DependencyInjection
         {
             httpClient.BaseAddress = new Uri(configuration["ConnectedServices:MockAPI:BaseUrl"] ?? throw new ConfigurationException("Invalid Mock API URL"));
         });
-        services.AddScoped<ItemRepository, Repositories.ItemRepository>();
+        services.AddScoped<IItemRepository, Repositories.ItemRepository>();
         return services;
     }
 }

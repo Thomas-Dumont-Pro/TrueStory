@@ -1,7 +1,5 @@
 ﻿using Application.Common.Models;
 using Application.Common.Validators;
-using Application.Exceptions;
-using Application.Queries;
 using Domain.Models;
 using FluentValidation;
 using MediatR;
@@ -14,7 +12,7 @@ public sealed class CreateItem(BaseItem item) : IRequest<Item>
 }
 
 // ReSharper disable once UnusedMember.Global - Used in Api/Controller/ItemController.cs by mediator.Send
-public sealed class CreateItemHandler(ItemRepository itemRepository)
+public sealed class CreateItemHandler(IItemRepository itemRepository)
     : IRequestHandler<CreateItem, Item>
 {
     public async Task<Item> Handle(CreateItem request, CancellationToken cancellationToken)

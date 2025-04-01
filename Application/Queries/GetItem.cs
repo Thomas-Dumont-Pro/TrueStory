@@ -12,7 +12,7 @@ public sealed class GetItem(string id) : IRequest<Item>
 }
 
 // ReSharper disable once UnusedMember.Global - Used in Api/Controller/ItemController.cs by mediator.Send
-public sealed class GetItemHandler(ItemRepository itemRepository)
+public sealed class GetItemHandler(IItemRepository itemRepository)
     : IRequestHandler<GetItem, Item>
 {
     public async Task<Item> Handle(GetItem request, CancellationToken cancellationToken)

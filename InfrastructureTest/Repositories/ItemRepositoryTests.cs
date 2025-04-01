@@ -33,7 +33,7 @@ public class ItemRepositoryTests
     public async Task GetAllItems_ShouldReturnAllItems()
     {
         // Arrange
-        var items = new List<Item> { new Item { Id = "1", Name = "Item1" }, new Item { Id = "2", Name = "Item2" } };
+        var items = new List<Item> { new() { Id = "1", Name = "Item1" }, new() { Id = "2", Name = "Item2" } };
         var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(items), System.Text.Encoding.UTF8, "application/json")
@@ -44,8 +44,9 @@ public class ItemRepositoryTests
         var result = await _itemRepository.GetItems(new CancellationToken());
 
         // Assert
-        result.Should().NotBeNull();
-        var enumerable = result.ToList();
+        var enumerable1 = result.ToList();
+        enumerable1.Should().NotBeNull();
+        var enumerable = enumerable1.ToList();
         enumerable.Should().HaveCount(2);
         enumerable[0].Name.Should().Be("Item1");
         enumerable[1].Name.Should().Be("Item2");

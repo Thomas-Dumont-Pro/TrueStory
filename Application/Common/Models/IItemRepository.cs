@@ -2,7 +2,7 @@
 
 namespace Application.Common.Models;
 
-public interface ItemRepository
+public interface IItemRepository
 {
     Task<IEnumerable<Item>> GetItems(CancellationToken cancellationToken);
     Task<Item?> GetItem(string id, CancellationToken cancellationToken);

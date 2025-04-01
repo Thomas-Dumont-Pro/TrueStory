@@ -9,12 +9,12 @@ namespace ApplicationTest.Commands;
 
 public class UpdateItemTest
 {
-    private readonly Mock<ItemRepository> _itemRepositoryMock;
+    private readonly Mock<IItemRepository> _itemRepositoryMock;
     private readonly UpdateItemHandler _handler;
 
     public UpdateItemTest()
     {
-        _itemRepositoryMock = new Mock<ItemRepository>();
+        _itemRepositoryMock = new Mock<IItemRepository>();
         _handler = new UpdateItemHandler(_itemRepositoryMock.Object);
     }
 

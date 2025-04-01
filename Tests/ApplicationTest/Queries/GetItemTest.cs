@@ -10,12 +10,12 @@ namespace ApplicationTest.Queries;
 
 public class GetItemTest
 {
-    private readonly Mock<ItemRepository> _itemRepositoryMock;
+    private readonly Mock<IItemRepository> _itemRepositoryMock;
     private readonly GetItemHandler _handler;
 
     public GetItemTest()
     {
-        _itemRepositoryMock = new Mock<ItemRepository>();
+        _itemRepositoryMock = new Mock<IItemRepository>();
         _handler = new GetItemHandler(_itemRepositoryMock.Object);
     }
 

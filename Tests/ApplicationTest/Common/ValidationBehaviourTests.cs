@@ -71,8 +71,4 @@ namespace ApplicationTest.Common
             next.Verify(n => n(), Times.Once);
         }
     }
-
-    public class SampleRequest { }
-
-    public class SampleResponse { }
 }

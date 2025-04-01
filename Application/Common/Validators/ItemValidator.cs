@@ -3,6 +3,8 @@ using FluentValidation;
 
 namespace Application.Common.Validators;
 
+
+// ReSharper disable once UnusedMember.Global 
 public class ItemValidator : AbstractValidator<Item>
 {
     public ItemValidator()

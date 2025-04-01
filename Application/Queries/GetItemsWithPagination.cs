@@ -15,7 +15,7 @@ public sealed class GetItemsWithPagination : IRequest<IEnumerable<Item>>
 }
 
 // ReSharper disable once UnusedMember.Global - Used in Api/Controller/ItemController.cs by mediator.Send
-public sealed class GetItemsWithPaginationHandler(ItemRepository itemRepository)
+public sealed class GetItemsWithPaginationHandler(IItemRepository itemRepository)
     : IRequestHandler<GetItemsWithPagination, IEnumerable<Item>>
 {
     public async Task<IEnumerable<Item>> Handle(GetItemsWithPagination request, CancellationToken cancellationToken)
