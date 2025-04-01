@@ -35,3 +35,7 @@ app.MapControllers();
 app.UseExceptionHandler();
 
 app.Run();
+
+//This is due to changed in the Program.cs file in .NET 6
+//It's done as suggested in .NetCore wiki https://learn.microsoft.com/fr-fr/aspnet/core/test/integration-tests?view=aspnetcore-9.0
+public partial class Program{}

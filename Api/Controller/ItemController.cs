@@ -31,6 +31,7 @@ public class ItemController(IMediator mediator) : ControllerBase
 
     // POST: ItemController
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult> Create([FromBody] BaseItem item)
     {
         var createdItem = await mediator.Send(new CreateItem(item));
@@ -39,6 +40,9 @@ public class ItemController(IMediator mediator) : ControllerBase
 
     // PATCH: ItemController/5
     [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status405MethodNotAllowed)]
     public async Task<ActionResult> Edit(string id, [FromBody] Item item)
     {
         if(id != item.Id)
@@ -50,6 +54,8 @@ public class ItemController(IMediator mediator) : ControllerBase
 
     // DELETE : ItemController/5
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(string id)
     {
         await mediator.Send(new DeleteItem(id));

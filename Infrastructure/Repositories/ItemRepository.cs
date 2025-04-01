@@ -43,7 +43,7 @@ public class ItemRepository(IHttpClientFactory httpClient) : Application.Common.
 
     public async Task<Item> UpdateItem(Item item, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.PatchAsJsonAsync("objects", item, cancellationToken);
+        var response = await _httpClient.PatchAsJsonAsync($"objects/{item.Id}", item, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
