@@ -1,4 +1,6 @@
 ﻿using Application.Common.Behaviours;
+using Application.Queries;
+using Domain.Models;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
@@ -10,38 +12,40 @@ namespace ApplicationTest.Common
 {
     public class ValidationBehaviourTests
     {
-        private readonly Mock<IValidator<SampleRequest>> _validatorMock;
-        private readonly ValidationBehaviour<SampleRequest, SampleResponse> _validationBehaviour;
+        private readonly Mock<IValidator<GetItem>> _validatorMock;
+        private readonly ValidationBehaviour<GetItem, Item> _validationBehaviour;
 
         public ValidationBehaviourTests()
         {
-            _validatorMock = new Mock<IValidator<SampleRequest>>();
-            var validators = new List<IValidator<SampleRequest>> { _validatorMock.Object };
-            _validationBehaviour = new ValidationBehaviour<SampleRequest, SampleResponse>(validators);
+            _validatorMock = new Mock<IValidator<GetItem>>();
+            var validators = new List<IValidator<GetItem>> { _validatorMock.Object };
+            _validationBehaviour = new ValidationBehaviour<GetItem, Item>(validators);
         }
 
         [Test,Order(0)]
         public async Task Handle_ShouldCallValidateAsync()
         {
             // Arrange
-            var request = new SampleRequest();
-            var next = new Mock<RequestHandlerDelegate<SampleResponse>>();
+            var request = new GetItem("NotEmpty");
+            var next = new Mock<RequestHandlerDelegate<Item>>(); 
+            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<GetItem>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ValidationResult());
 
             // Act
             await _validationBehaviour.Handle(request, next.Object, CancellationToken.None);
 
             // Assert
-            _validatorMock.Verify(v => v.ValidateAsync(It.IsAny<ValidationContext<SampleRequest>>(), It.IsAny<CancellationToken>()), Times.Once);
+            _validatorMock.Verify(v => v.ValidateAsync(It.IsAny<GetItem>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
         public async Task Handle_ShouldThrowValidationException_WhenValidationFails()
         {
             // Arrange
-            var request = new SampleRequest();
-            var next = new Mock<RequestHandlerDelegate<SampleResponse>>();
-            var failures = new List<ValidationFailure> { new ValidationFailure("Property", "Error") };
-            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<ValidationContext<SampleRequest>>(), It.IsAny<CancellationToken>()))
+            var request = new GetItem("NotEmpty");
+            var next = new Mock<RequestHandlerDelegate<Item>>();
+            var failures = new List<ValidationFailure> { new ("Property", "Error") };
+            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<GetItem>(), It.IsAny<CancellationToken>()))
                           .ReturnsAsync(new ValidationResult(failures));
 
             // Act
@@ -55,9 +59,9 @@ namespace ApplicationTest.Common
         public async Task Handle_ShouldCallNext_WhenValidationSucceeds()
         {
             // Arrange
-            var request = new SampleRequest();
-            var next = new Mock<RequestHandlerDelegate<SampleResponse>>();
-            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<ValidationContext<SampleRequest>>(), It.IsAny<CancellationToken>()))
+            var request = new GetItem("NotEmpty");
+            var next = new Mock<RequestHandlerDelegate<Item>>();
+            _validatorMock.Setup(v => v.ValidateAsync(It.IsAny<GetItem>(), It.IsAny<CancellationToken>()))
                           .ReturnsAsync(new ValidationResult());
 
             // Act

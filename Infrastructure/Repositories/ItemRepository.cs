@@ -41,9 +41,9 @@ public class ItemRepository(IHttpClientFactory httpClient) : Application.Common.
         return await response.Content.ReadFromJsonAsync<Item>(cancellationToken) ?? throw new InvalidOperationException();
     }
 
-    public async Task<Item> UpdateItem(Item item, CancellationToken cancellationToken)
+    public async Task<Item> UpdateItem(string id, PartialItem item, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.PatchAsJsonAsync($"objects/{item.Id}", item, cancellationToken);
+        var response = await _httpClient.PatchAsJsonAsync($"objects/{id}", item, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 

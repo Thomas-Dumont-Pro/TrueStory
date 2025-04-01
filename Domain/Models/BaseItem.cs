@@ -1,7 +1,10 @@
 ﻿namespace Domain.Models;
 
-public class BaseItem
+public class BaseItem : PartialItem
 {
-    public required string Name { get; set; }
-    public dynamic? Data { get; set; }
+    public new required string Name { get; set; }
+    
+    public DateTimeOffset? CreatedAt { get; set; }
+
+    public DateTimeOffset? UpdatedAt { get; set; }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.Common.Enums;
 using Application.Common.Models;
 using Domain.Models;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Queries;
@@ -28,5 +29,17 @@ public sealed class GetItemsWithPaginationHandler(ItemRepository itemRepository)
 
         return result.Skip(request.PageNumber * request.PageSize)
         .Take(request.PageSize);
+    }
+}
+
+// ReSharper disable once UnusedMember.Global - Used by ValidationBehavior
+public class GetItemsWithPaginationValidator : AbstractValidator<GetItemsWithPagination>
+{
+    public GetItemsWithPaginationValidator()
+    {
+        RuleFor(x => x.PageSize)
+            .GreaterThan(0).WithMessage("The page size must be greater than 0.");
+        RuleFor(x => x.PageNumber)
+            .GreaterThanOrEqualTo(0).WithMessage("The page number must be greater than or equal to 0.");
     }
 }

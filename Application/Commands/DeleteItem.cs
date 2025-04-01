@@ -1,5 +1,6 @@
 ﻿using Application.Common.Models;
 using Domain.Models;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Commands;
@@ -15,4 +16,14 @@ public sealed class DeleteItemHandler(ItemRepository itemRepository)
 {
     public async Task Handle(DeleteItem request, CancellationToken cancellationToken)
         => await itemRepository.DeleteItem(request.Id, cancellationToken);
+}
+
+// ReSharper disable once UnusedMember.Global - Used by ValidationBehavior
+public class DeleteItemValidator : AbstractValidator<DeleteItem>
+{
+    public DeleteItemValidator()
+    {
+        RuleFor(x => x.Id)
+            .NotEmpty().WithMessage("Id is required.");
+    }
 }

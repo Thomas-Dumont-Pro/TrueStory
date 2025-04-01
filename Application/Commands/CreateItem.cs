@@ -1,7 +1,9 @@
 ﻿using Application.Common.Models;
+using Application.Common.Validators;
 using Application.Exceptions;
 using Application.Queries;
 using Domain.Models;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Commands;
@@ -17,4 +19,13 @@ public sealed class CreateItemHandler(ItemRepository itemRepository)
 {
     public async Task<Item> Handle(CreateItem request, CancellationToken cancellationToken)
         => await itemRepository.CreateItem(request.Item, cancellationToken);
+}
+
+// ReSharper disable once UnusedMember.Global - Used by ValidationBehavior
+public class CreateItemValidator : AbstractValidator<CreateItem>
+{
+    public CreateItemValidator()
+    {
+        RuleFor(x => x.Item).SetValidator(new BaseItemValidator());
+    }
 }

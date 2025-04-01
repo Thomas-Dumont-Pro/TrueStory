@@ -22,18 +22,18 @@ public class UpdateItemTest
     public async Task Handle_ShouldUpdateItem_WhenItemExists()
     {
         // Arrange
-        var itemId = Guid.NewGuid();
+        var itemId = Guid.NewGuid().ToString();
 
-        var existingItem = new Item { Id = itemId.ToString(), Name = "Old Item" };
-        var updateItemCommand = new UpdateItem(existingItem);
+        var existingItem = new Item { Id = itemId, Name = "Old Item" };
+        var updateItemCommand = new UpdateItem(itemId, existingItem);
 
-        _itemRepositoryMock.Setup(repo => repo.UpdateItem(It.IsAny<Item>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingItem);
+        _itemRepositoryMock.Setup(repo => repo.UpdateItem(It.IsAny<string>(),It.IsAny<BaseItem>(), It.IsAny<CancellationToken>())).ReturnsAsync(existingItem);
 
         // Act
         var stillExistingItem = await _handler.Handle(updateItemCommand, CancellationToken.None);
 
         // Assert
-        _itemRepositoryMock.Verify(repo => repo.UpdateItem(It.IsAny<Item>(), It.IsAny<CancellationToken>()), Times.Once);
+        _itemRepositoryMock.Verify(repo => repo.UpdateItem(It.IsAny<string>(), It.IsAny<BaseItem>(), It.IsAny<CancellationToken>()), Times.Once);
         stillExistingItem.Should().BeEquivalentTo(existingItem);
     }
 
@@ -41,12 +41,12 @@ public class UpdateItemTest
     public async Task Handle_ShouldThrowException_WhenExceptionHappend()
     {
         // Arrange
-        var itemId = Guid.NewGuid();
+        var itemId = Guid.NewGuid().ToString();
 
-        var existingItem = new Item { Id = itemId.ToString(), Name = "Old Item" };
-        var updateItemCommand = new UpdateItem(existingItem);
+        var existingItem = new Item { Id = itemId, Name = "Old Item" };
+        var updateItemCommand = new UpdateItem(itemId, existingItem);
 
-        _itemRepositoryMock.Setup(repo => repo.UpdateItem(It.IsAny<Item>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
+        _itemRepositoryMock.Setup(repo => repo.UpdateItem(It.IsAny<string>(), It.IsAny<BaseItem>(), It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
         // Act & Assert
         await _handler.Invoking(h => h.Handle(updateItemCommand, CancellationToken.None))

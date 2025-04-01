@@ -43,13 +43,10 @@ public class ItemController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status405MethodNotAllowed)]
-    public async Task<ActionResult> Edit(string id, [FromBody] Item item)
+    public async Task<ActionResult> Edit(string id, [FromBody] PartialItem item)
     {
-        if(id != item.Id)
-            throw new ArgumentException("Invalid Id");
-
-        var createdItem = await mediator.Send(new UpdateItem(item));
-        return AcceptedAtAction(nameof(Details), new { id = createdItem.Id }, createdItem);
+        var updatedItem = await mediator.Send(new UpdateItem(id,item));
+        return AcceptedAtAction(nameof(Details), new { id = updatedItem.Id }, updatedItem);
     }
 
     // DELETE : ItemController/5

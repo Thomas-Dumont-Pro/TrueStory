@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 
 namespace Application.Common.Behaviours;
 
@@ -12,11 +11,9 @@ public sealed class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValida
     {
         if (validators.Any())
         {
-            var context = new ValidationContext<TRequest>(request);
-
             var validationResults = await Task.WhenAll(
                 validators.Select(v =>
-                    v.ValidateAsync(context, cancellationToken)));
+                    v.ValidateAsync(request, cancellationToken)));
 
             var failures = validationResults
                 .Where(r => r.Errors.Any())
@@ -24,7 +21,10 @@ public sealed class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValida
                 .ToList();
 
             if (failures.Any())
-                throw new ValidationException(failures.ToString());
+            {
+                var errorMessage = string.Join("; ", failures.Select(f => f.ErrorMessage));
+                throw new ValidationException(errorMessage);
+            }
         }
         return await next();
     }

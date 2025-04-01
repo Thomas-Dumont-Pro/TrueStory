@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Application.Exceptions;
+﻿using Application.Exceptions;
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
