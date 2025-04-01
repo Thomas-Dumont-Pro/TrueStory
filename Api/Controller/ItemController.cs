@@ -9,18 +9,18 @@ namespace Api;
 
 [ApiController]
 [Route("[controller]")]
-public class ObjectController(IMediator mediator) : ControllerBase
+public class ItemController(IMediator mediator) : ControllerBase
 {
 
 
-    // GET: ObjectController
+    // GET: ItemController
     [HttpGet(Name = "Get All Objects")]
     public async Task<ActionResult> GetAll([FromQuery] int pageSize=10, [FromQuery] int pageNumber=0, [FromQuery] string[]? ids = null, [FromQuery] SortOrder sortOrder = SortOrder.Ascending)
     {
         return Ok(await mediator.Send(new GetItemsWithPagination { PageNumber = pageNumber, PageSize = pageSize, ListId = ids?.ToList(), SortOrder = sortOrder}));
     }
 
-    // GET: ObjectController/5
+    // GET: ItemController/5
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -29,7 +29,7 @@ public class ObjectController(IMediator mediator) : ControllerBase
         return Ok(await mediator.Send(new GetItem(id)));
     }
 
-    // POST: ObjectController
+    // POST: ItemController
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] BaseItem item)
     {
@@ -37,7 +37,7 @@ public class ObjectController(IMediator mediator) : ControllerBase
         return CreatedAtAction(nameof(Details), new { id = createdItem.Id }, createdItem);
     }
 
-    // PATCH: ObjectController/5
+    // PATCH: ItemController/5
     [HttpPatch("{id}")]
     public async Task<ActionResult> Edit(string id, [FromBody] Item item)
     {
@@ -48,7 +48,7 @@ public class ObjectController(IMediator mediator) : ControllerBase
         return AcceptedAtAction(nameof(Details), new { id = createdItem.Id }, createdItem);
     }
 
-    // DELETE : ObjectController/5
+    // DELETE : ItemController/5
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(string id)
     {

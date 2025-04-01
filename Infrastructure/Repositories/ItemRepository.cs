@@ -7,15 +7,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories;
 
-public class ItemRepository : Application.Common.Models.ItemRepository
+public class ItemRepository(IHttpClientFactory httpClient) : Application.Common.Models.ItemRepository
 {
-    private readonly HttpClient _httpClient;
-
-    public ItemRepository(HttpClient httpClient, IConfiguration configuration)
-    {
-        _httpClient = httpClient;
-        _httpClient.BaseAddress = new Uri(configuration["ConnectedServices:MockAPI:BaseUrl"] ?? throw new ConfigurationException("Invalid Mock API URL") );
-    }
+    private readonly HttpClient _httpClient = httpClient.CreateClient("MockApi");
 
     public async Task<IEnumerable<Item>> GetItems(CancellationToken cancellationToken)
     {
@@ -44,7 +38,7 @@ public class ItemRepository : Application.Common.Models.ItemRepository
 
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<Item>(cancellationToken)! ?? throw new InvalidOperationException();
+        return await response.Content.ReadFromJsonAsync<Item>(cancellationToken) ?? throw new InvalidOperationException();
     }
 
     public async Task<Item> UpdateItem(Item item, CancellationToken cancellationToken)
@@ -53,7 +47,7 @@ public class ItemRepository : Application.Common.Models.ItemRepository
 
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<Item>(cancellationToken)! ?? throw new InvalidOperationException();
+        return await response.Content.ReadFromJsonAsync<Item>(cancellationToken) ?? throw new InvalidOperationException();
     }
 
     public async Task DeleteItem(string id, CancellationToken cancellationToken)
